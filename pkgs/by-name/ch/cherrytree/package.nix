@@ -17,11 +17,20 @@
   spdlog,
   fribidi,
   vte,
+  icu,
+  libepoxy,
+  lerc,
+  libdatrie,
+  libthai,
+  pcre2,
+  libsysprof-capture,
+  librsvg,
+  libXdmcp,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "cherrytree";
-  version = "1.4.0";
+  version = "1.5.0";
 
   src = fetchFromGitHub {
     owner = "giuspen";
@@ -49,6 +58,15 @@ stdenv.mkDerivation (finalAttrs: {
     spdlog
     fribidi
     vte
+    icu
+    libepoxy
+    lerc
+    libdatrie
+    libthai
+    pcre2
+    libsysprof-capture
+    librsvg
+    libXdmcp
   ];
 
   meta = {
@@ -66,7 +84,7 @@ stdenv.mkDerivation (finalAttrs: {
     homepage = "https://www.giuspen.com/cherrytree";
     changelog = "https://raw.githubusercontent.com/giuspen/cherrytree/${finalAttrs.version}/changelog.txt";
     license = lib.licenses.gpl3Plus;
-    maintainers = [ ];
+    maintainers = [ lib.maintainers.lionstech ];
     platforms = lib.platforms.unix;
   };
 })
