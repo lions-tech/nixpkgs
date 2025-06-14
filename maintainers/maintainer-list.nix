@@ -175,13 +175,13 @@
     email = "Armin.Mahdilou@gmail.com";
     github = "1nv0k32";
     githubId = 30079271;
-  };
-  _21CSM = {
-    name = "21CSM";
-    email = "21CSM@tutanota.com";
-    github = "21CSM";
-    githubId = 81891917;
-  };
+  };l
+    _21CSM = {
+      name = "21CSM";
+      email = "21CSM@tutanota.com";
+      github = "21CSM";
+      githubId = 81891917;
+    };
   _21eleven = {
     name = "Noah Lidell";
     email = "noahlidell@gmail.com";
@@ -14332,6 +14332,12 @@
     github = "lionello";
     githubId = 591860;
     name = "Lionello Lunesu";
+  };
+  lionstech = {
+    email = "lionstech@vivaldi.net";
+    github = "lions-tech";
+    githubId = 128574883;
+    name = "Leonard Mayer";
   };
   litchipi = {
     email = "litchi.pi@proton.me";
