@@ -26,7 +26,77 @@
   libsysprof-capture,
   librsvg,
   libXdmcp,
+  imagemagick,
+  libicns,
+  python3Packages,
 }:
+
+let
+  plistMinimal =
+    { app-name, version }:
+    ''
+      <?xml version="1.0" encoding="UTF-8" standalone="no"?><plist version="1.0">
+        <dict>
+          <key>CFBundleExecutable</key>
+          <string>${app-name}</string>
+          <key>CFBundleGetInfoString</key>
+          <string>${app-name} ${version}</string>
+          <key>CFBundleVersion</key>
+          <string>${version}</string>
+          <key>CFBundleShortVersionString</key>
+          <string>${version}</string>
+          <key>CFBundleIconFile</key>
+          <string>Icon.icns</string>
+          <key>CFBundleIconName</key>
+          <string>Icon.icns</string>
+      </dict>
+      </plist>
+    '';
+
+  macOsBundleScript =
+    {
+      bin-name,
+      app-name,
+      version,
+      svg-path,
+    }:
+    ''
+      set -e
+      svg2icns() {
+        local sizes="
+            16,16x16
+            32,32x32
+            128,128x128
+            256,256x256
+            512,512x512
+        "
+
+        local base
+        local iconset
+        for SVG in "$@"; do
+          base=$(basename "$SVG")
+          base="''${base%.*}"
+          iconset="$base.iconset"
+          mkdir -p "$iconset"
+          for PARAMS in $sizes; do
+            ${lib.getBin imagemagick}/bin/magick $SVG \
+              -resize "''${PARAMS%,*}" "$iconset/icon_''${PARAMS#*,}.png"
+          done
+
+          ${lib.getBin libicns}/bin/png2icns Icon.icns "$iconset"/*.png
+        done
+      }
+
+      mkdir -p $out/Applications/${app-name}.app/Contents/MacOS
+      ln -s "$out/bin/${bin-name}" "$out/Applications/${app-name}.app/Contents/MacOS/${app-name}"
+      echo "${
+        plistMinimal { inherit app-name version; }
+      }" > "$out/Applications/${app-name}.app/Contents/Info.plist"
+      svg2icns ${svg-path}
+      mkdir -p $out/Applications/${app-name}.app/Contents/Resources
+      mv *.icns $out/Applications/${app-name}.app/Contents/Resources/Icon.icns
+    '';
+in
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "cherrytree";
@@ -46,28 +116,33 @@ stdenv.mkDerivation (finalAttrs: {
     wrapGAppsHook3
   ];
 
-  buildInputs = [
-    gtkmm3
-    gtksourceview4
-    gtksourceviewmm
-    gspell
-    libxmlxx
-    sqlite
-    curl
-    libuchardet
-    spdlog
-    fribidi
-    vte
-    icu
-    libepoxy
-    lerc
-    libdatrie
-    libthai
-    pcre2
-    libsysprof-capture
-    librsvg
-    libXdmcp
-  ];
+  buildInputs =
+    [
+      gtkmm3
+      gtksourceview4
+      gtksourceviewmm
+      gspell
+      libxmlxx
+      sqlite
+      curl
+      libuchardet
+      spdlog
+      fribidi
+      vte
+      icu
+      libepoxy
+      lerc
+      libdatrie
+      libthai
+      pcre2
+      libsysprof-capture
+      librsvg
+      libXdmcp
+    ]
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [
+      python3Packages.pyobjc-core
+      python3Packages.pyobjc-framework-Cocoa
+    ];
 
   meta = {
     description = "Hierarchical note taking application";
