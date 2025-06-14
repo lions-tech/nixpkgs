@@ -158,7 +158,13 @@ stdenv.mkDerivation (finalAttrs: {
     let
       emulator = stdenv.hostPlatform.emulator buildPackages;
     in
-    lib.optionalString withPixbufLoader ''
+    lib.optionalString stdenv.hostPlatform.isDarwin ''
+      install_name_tool -change \
+        @rpath/librsvg-2.2.dylib \
+        $out/lib/librsvg-2.2.dylib \
+        $out/${gdk-pixbuf.moduleDir}/libpixbufloader_svg.dylib
+    ''
+    + lib.optionalString withPixbufLoader ''
       # Merge gdkpixbuf and librsvg loaders
       ${lib.getDev gdk-pixbuf}/bin/gdk-pixbuf-query-loaders \
         ${lib.getLib gdk-pixbuf}/${gdk-pixbuf.moduleDir}/* \
