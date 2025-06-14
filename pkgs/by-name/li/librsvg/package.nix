@@ -160,9 +160,11 @@ stdenv.mkDerivation (finalAttrs: {
     in
     lib.optionalString withPixbufLoader ''
       # Merge gdkpixbuf and librsvg loaders
-      GDK_PIXBUF=$out/${gdk-pixbuf.binaryDir}
-      cat ${lib.getLib gdk-pixbuf}/${gdk-pixbuf.binaryDir}/loaders.cache $GDK_PIXBUF/loaders.cache > $GDK_PIXBUF/loaders.cache.tmp
-      mv $GDK_PIXBUF/loaders.cache.tmp $GDK_PIXBUF/loaders.cache
+      ${lib.getDev gdk-pixbuf}/bin/gdk-pixbuf-query-loaders \
+        ${lib.getLib gdk-pixbuf}/${gdk-pixbuf.moduleDir}/* \
+        $out/${gdk-pixbuf.moduleDir}/* \
+        > $out/${gdk-pixbuf.binaryDir}/loaders.cache
+
     ''
     + lib.optionalString (stdenv.hostPlatform.emulatorAvailable buildPackages) ''
       installShellCompletion --cmd rsvg-convert \
